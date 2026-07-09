@@ -24,14 +24,21 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: (
         <LayoutDashboardIcon />
       ),
     },
     {
       title: "Add Products",
-      url: "#",
+      url: "/dashboard/add-Product",
+      icon: (
+        <ListIcon />
+      ),
+    },
+    {
+      title: "Products Detail",
+      url: "/dashboard/product-detail",
       icon: (
         <ListIcon />
       ),
@@ -170,7 +177,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
-              <a href="#">
+              <a href="/dashboard">
                 <CommandIcon className="size-5!" />
                 <span className="text-base font-semibold">Dashboard</span>
               </a>

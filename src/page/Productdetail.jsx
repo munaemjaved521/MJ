@@ -1,15 +1,35 @@
 import { useState } from "react";
-import { Star, Minus, Plus } from "lucide-react";
+import { Star, Minus, Plus, Heart } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function ProductDetail() {
   const colors = [
-    { name: "Black", value: "#000000" },
-    { name: "White", value: "#ffffff" },
-    { name: "Blue", value: "#2563eb" },
-    { name: "Red", value: "#dc2626" },
+    {
+      name: "Black",
+      value: "#000000",
+      image:
+        "https://images.unsplash.com/photo-1710472171218-da46dce3faf9?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmxhY2slMjBuaWtlfGVufDB8fDB8fHww",
+    },
+    {
+      name: "White",
+      value: "#ffffff",
+      image:
+        "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8d2hpdGUlMjBuaWtlfGVufDB8fDB8fHww",
+    },
+    {
+      name: "Blue",
+      value: "#2563eb",
+      image:
+        "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Ymx1ZSUyMG5pa2V8ZW58MHx8MHx8fDA%3D",
+    },
+    {
+      name: "Red",
+      value: "#dc2626",
+      image:
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmVkJTVDJTIwbmlrZXxlbnwwfHwwfHx8MA%3D%3D",
+    },
   ];
 
   const sizes = [38, 39, 40, 41, 42, 43];
@@ -17,7 +37,8 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [selectedSize, setSelectedSize] = useState(41);
   const [quantity, setQuantity] = useState(1);
-
+  const [wishlist, setWishlist] = useState(false);
+  
   return (
     <div className="min-h-screen bg-slate-100 flex justify-center items-center p-10">
       <Card className="max-w-6xl w-full shadow-xl rounded-2xl">
@@ -26,7 +47,7 @@ export default function ProductDetail() {
           {/* Image */}
           <div className="flex justify-center">
             <img
-              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600"
+              src={selectedColor.image}
               alt="Shoe"
               className="rounded-xl object-cover w-full max-w-md"
             />
@@ -41,11 +62,11 @@ export default function ProductDetail() {
               </h1>
 
               <div className="flex items-center gap-1 mt-2 text-yellow-500">
-                <Star fill="currentColor" size={18}/>
-                <Star fill="currentColor" size={18}/>
-                <Star fill="currentColor" size={18}/>
-                <Star fill="currentColor" size={18}/>
-                <Star fill="currentColor" size={18}/>
+                <Star fill="currentColor" size={18} />
+                <Star fill="currentColor" size={18} />
+                <Star fill="currentColor" size={18} />
+                <Star fill="currentColor" size={18} />
+                <Star fill="currentColor" size={18} />
                 <span className="text-gray-600 ml-2">(4.9)</span>
               </div>
 
@@ -61,7 +82,6 @@ export default function ProductDetail() {
             </p>
 
             {/* Colors */}
-
             <div>
               <h3 className="font-semibold mb-3">
                 Select Color
@@ -72,9 +92,9 @@ export default function ProductDetail() {
                   <button
                     key={color.name}
                     onClick={() => setSelectedColor(color)}
-                    className={`w-10 h-10 rounded-full border-4 ${
+                    className={`w-10 h-10 rounded-full border-4 transition-all ${
                       selectedColor.name === color.name
-                        ? "border-black"
+                        ? "border-black scale-110"
                         : "border-gray-300"
                     }`}
                     style={{ backgroundColor: color.value }}
@@ -84,7 +104,6 @@ export default function ProductDetail() {
             </div>
 
             {/* Sizes */}
-
             <div>
               <h3 className="font-semibold mb-3">
                 Select Size
@@ -108,7 +127,6 @@ export default function ProductDetail() {
             </div>
 
             {/* Quantity */}
-
             <div>
               <h3 className="font-semibold mb-3">
                 Quantity
@@ -145,20 +163,33 @@ export default function ProductDetail() {
             </div>
 
             {/* Buttons */}
+           <div className="flex gap-4 pt-4">
 
-            <div className="flex gap-4 pt-4">
-              <Button className="flex-1">
-                Add to Cart
-              </Button>
+  <Button className="flex-1">
+    Add to Cart
+  </Button>
 
-              <Button
-                variant="secondary"
-                className="flex-1"
-              >
-                Buy Now
-              </Button>
-            </div>
+  <Button
+    variant="secondary"
+    className="flex-1"
+  >
+    Buy Now
+  </Button>
 
+  <Button
+    variant="outline"
+    size="icon"
+    onClick={() => setWishlist(!wishlist)}
+  >
+    <Heart
+      className={`${
+        wishlist
+          ? "fill-red-500 text-red-500"
+          : "text-gray-500"
+      }`}
+    />
+  </Button>
+</div>
           </div>
 
         </CardContent>

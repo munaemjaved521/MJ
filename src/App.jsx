@@ -6,19 +6,21 @@ import Dashboard from './page/Dashboard'
 import DashboardLayout from './layout/DashboardLayout'
 import Contact from './page/Contact'
 import ProductDetail from './page/Productdetail'
+import Addproducts from './page/add_product'
+import ProductPage from './page/products'
 
 const App = () => {
    return (
 
     <Routes>
 
-<Route path={'/'} element={<Home/>}/>
-<Route path={'/dashboard'} element={<DashboardLayout/>}>
+
+<Route path={'/'} element={<DashboardLayout/>}>
 <Route index element={<Dashboard/>}/>
 <Route path={'contact'} element={<Contact/>}/>
 <Route path={'product-detail'} element={<ProductDetail/>}/>
-<Route path={'add-Product'} element={<add_product/>}/>
-<Route path={'Products'} element={<add_product/>}/>
+<Route path={'add-Product'} element={<Addproducts/>}/>
+<Route path={'Products'} element={<ProductPage/>}/>
 </Route>
 
     </Routes>

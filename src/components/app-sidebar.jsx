@@ -14,6 +14,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const data = {
   user: {
@@ -24,28 +25,28 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/dashboard",
+      url: "/",
       icon: (
         <LayoutDashboardIcon />
       ),
     },
     {
       title: "Add Products",
-      url: "/dashboard/add-Product",
+      url: "/add-Product",
       icon: (
         <ListIcon />
       ),
     },
     {
       title: "Products Detail",
-      url: "/dashboard/product-detail",
+      url: "/product-detail",
       icon: (
         <ListIcon />
       ),
     },
     {
       title: "Products",
-      url: "#",
+      url: "/products",
       icon: (
         <ChartBarIcon />
       ),
@@ -177,10 +178,10 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
-              <a href="/dashboard">
+              <Link to={'/'}>
                 <CommandIcon className="size-5!" />
                 <span className="text-base font-semibold">Dashboard</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

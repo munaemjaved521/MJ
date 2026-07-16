@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,18 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function Contact() {
   const [count, setCount] = useState(0);
 
+  useEffect(()=>{
+    getdata()
+  },[count])
+
+  function getdata(){
+  fetch('https://fakestoreapi.com/products')
+  .then(response => response.json())
+  .then(data => console.log(data));}
   const handleIncrement = () => {
-    setCount((prev) => prev + 1);
+  setCount((prev) => prev + 1);
   };
+
 
   const handleDecrement = () => {
     setCount((prev) => Math.max(prev - 1, 0));

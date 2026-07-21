@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-
+import axios from "axios";
 
 export default function Addproducts() {
   const sizes = [38, 39, 40, 41, 42, 43];
@@ -18,287 +17,347 @@ export default function Addproducts() {
     { name: "Green", value: "#16a34a" },
   ];
 
+  // 1. Form States
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    category: "Shoes",
+    brand: "",
+    price: "",
+    discountPrice: "",
+    stock: "",
+    sku: "",
+  });
+
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [status, setStatus] = useState({
+    isFeatured: false,
+    isBestSeller: false,
+    isNewArrival: false,
+  });
+
+  const [mainImage, setMainImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Input change handler
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Toggle Size selection
+  const handleSizeToggle = (size) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    );
+  };
+
+  // Toggle Color selection
+  const handleColorToggle = (colorName) => {
+    setSelectedColors((prev) =>
+      prev.includes(colorName)
+        ? prev.filter((c) => c !== colorName)
+        : [...prev, colorName]
+    );
+  };
+
+  // Handle Image Change & Preview
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setMainImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  // 2. Submit Handler / API Call
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Agar image upload karni ho to FormData use karein
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("description", formData.description);
+      data.append("category", formData.category);
+      data.append("brand", formData.brand);
+      data.append("price", formData.price);
+      data.append("discountPrice", formData.discountPrice);
+      data.append("stock", formData.stock);
+      data.append("sku", formData.sku);
+      data.append("sizes", JSON.stringify(selectedSizes));
+      data.append("colors", JSON.stringify(selectedColors));
+      data.append("status", JSON.stringify(status));
+      if (mainImage) {
+        data.append("mainImage", mainImage);
+      }
+
+      const handlesubmit = async (e) =>
+      e.prevertdefault();
+      await axios.post("https://6a5f186c98d9f02aed7a128d.mockapi.io/products",formData)
+      .then(()=>{alert("data added")})
+      // // 3. API Fetch Request (Apni Backend API ka URL yahan lagayein)
+      // const response = await fetch("https://6a5f186c98d9f02aed7a128d.mockapi.io/:products", {
+      //   method: "POST",
+      //   body: data,
+      // });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Product Successfully Added!");
+        // Form reset karein
+        setFormData({
+          name: "",
+          description: "",
+          category: "Shoes",
+          brand: "",
+          price: "",
+          discountPrice: "",
+          stock: "",
+          sku: "",
+        });
+        setSelectedSizes([]);
+        setSelectedColors([]);
+        setPreviewUrl(null);
+      } else {
+        alert("Failed to add product: " + (result.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      alert("Something went wrong while connecting to the API!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 p-8">
-
       <div className="max-w-7xl mx-auto">
-
-        <h1 className="text-4xl font-bold mb-2">
-          Add Product
-        </h1>
-
+        <h1 className="text-4xl font-bold mb-2">Add Product</h1>
         <p className="text-gray-500 mb-8">
           Create a new product for your store.
         </p>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-
+        <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-6">
           {/* Left Side */}
-
           <Card className="lg:col-span-2">
-
             <CardHeader>
-              <CardTitle>
-                Product Information
-              </CardTitle>
+              <CardTitle>Product Information</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
-
               <div>
-
                 <Label>Product Name</Label>
-
                 <Input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="Nike Air Max 270"
+                  required
                 />
-
               </div>
 
               <div>
-
                 <Label>Description</Label>
-
                 <Textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
                   rows={5}
                   placeholder="Write product description..."
                 />
-
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-
                 <div>
-
                   <Label>Category</Label>
-
-                  <select className="w-full h-10 rounded-md border px-3">
-
-                    <option>Shoes</option>
-
-                    <option>T-Shirts</option>
-
-                    <option>Hoodies</option>
-
-                    <option>Accessories</option>
-
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full h-10 rounded-md border px-3"
+                  >
+                    <option value="Shoes">Shoes</option>
+                    <option value="T-Shirts">T-Shirts</option>
+                    <option value="Hoodies">Hoodies</option>
+                    <option value="Accessories">Accessories</option>
                   </select>
-
                 </div>
 
                 <div>
-
                   <Label>Brand</Label>
-
                   <Input
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleChange}
                     placeholder="Nike"
                   />
-
                 </div>
-
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-
                 <div>
-
-                  <Label>Price</Label>
-
+                  <Label>Price ($)</Label>
                   <Input
                     type="number"
-                    placeholder="$199"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    placeholder="199"
+                    required
                   />
-
                 </div>
 
                 <div>
-
-                  <Label>Discount Price</Label>
-
+                  <Label>Discount Price ($)</Label>
                   <Input
                     type="number"
-                    placeholder="$149"
+                    name="discountPrice"
+                    value={formData.discountPrice}
+                    onChange={handleChange}
+                    placeholder="149"
                   />
-
                 </div>
-
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-
                 <div>
-
                   <Label>Stock</Label>
-
                   <Input
                     type="number"
+                    name="stock"
+                    value={formData.stock}
+                    onChange={handleChange}
                     placeholder="100"
                   />
-
                 </div>
 
                 <div>
-
                   <Label>SKU</Label>
-
                   <Input
+                    name="sku"
+                    value={formData.sku}
+                    onChange={handleChange}
                     placeholder="NK-001"
                   />
-
                 </div>
-
               </div>
 
-              {/* Sizes */}
-
+              {/* Dynamic Sizes */}
               <div>
-
-                <Label className="mb-3 block">
-                  Available Sizes
-                </Label>
-
+                <Label className="mb-3 block">Available Sizes</Label>
                 <div className="flex flex-wrap gap-3">
-
-                  {sizes.map((size) => (
-
-                    <button
-                      key={size}
-                      className="h-10 w-14 rounded-lg border hover:bg-black hover:text-white transition"
-                    >
-                      {size}
-                    </button>
-
-                  ))}
-
+                  {sizes.map((size) => {
+                    const isSelected = selectedSizes.includes(size);
+                    return (
+                      <button
+                        type="button"
+                        key={size}
+                        onClick={() => handleSizeToggle(size)}
+                        className={`h-10 w-14 rounded-lg border transition ${
+                          isSelected
+                            ? "bg-black text-white border-black"
+                            : "bg-white hover:bg-slate-100"
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
                 </div>
-
               </div>
 
-              {/* Colors */}
-
+              {/* Dynamic Colors */}
               <div>
-
-                <Label className="mb-3 block">
-                  Available Colors
-                </Label>
-
+                <Label className="mb-3 block">Available Colors</Label>
                 <div className="flex gap-4">
-
-                  {colors.map((color) => (
-
-                    <button
-                      key={color.name}
-                      className="w-10 h-10 rounded-full border-2 border-gray-300"
-                      style={{
-                        backgroundColor: color.value,
-                      }}
-                    />
-
-                  ))}
-
+                  {colors.map((color) => {
+                    const isSelected = selectedColors.includes(color.name);
+                    return (
+                      <button
+                        type="button"
+                        key={color.name}
+                        onClick={() => handleColorToggle(color.name)}
+                        className={`w-10 h-10 rounded-full border-2 transition-all ${
+                          isSelected ? "ring-2 ring-black scale-110" : "border-gray-300"
+                        }`}
+                        style={{ backgroundColor: color.value }}
+                        title={color.name}
+                      />
+                    );
+                  })}
                 </div>
-
               </div>
-
             </CardContent>
-
           </Card>
 
           {/* Right Side */}
-
           <Card>
-
             <CardHeader>
-
-              <CardTitle>
-                Product Images
-              </CardTitle>
-
+              <CardTitle>Product Images & Status</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
-
               <div>
-
                 <Label>Main Image</Label>
-
-                <Input
-                  type="file"
-                />
-
+                <Input type="text" value={formData.image} name="image" onChange={handleChange} accept="image/*" />
               </div>
 
               <div>
-
-                <Label>Gallery Images</Label>
-
-                <Input
-                  type="file"
-                  multiple
-                />
-
-              </div>
-
-              <div>
-
                 <Label>Status</Label>
-
                 <div className="space-y-3 mt-3">
-
-                  <label className="flex items-center gap-2">
-
-                    <input type="checkbox" />
-
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={status.isFeatured}
+                      onChange={(e) => setStatus({ ...status, isFeatured: e.target.checked })}
+                    />
                     Featured Product
-
                   </label>
 
-                  <label className="flex items-center gap-2">
-
-                    <input type="checkbox" />
-
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={status.isBestSeller}
+                      onChange={(e) => setStatus({ ...status, isBestSeller: e.target.checked })}
+                    />
                     Best Seller
-
                   </label>
 
-                  <label className="flex items-center gap-2">
-
-                    <input type="checkbox" />
-
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={status.isNewArrival}
+                      onChange={(e) => setStatus({ ...status, isNewArrival: e.target.checked })}
+                    />
                     New Arrival
-
                   </label>
-
                 </div>
-
               </div>
 
+              {/* Image Preview Area */}
               <div>
-
                 <Label>Preview</Label>
-
-                <div className="mt-3 h-56 rounded-xl border-2 border-dashed flex items-center justify-center text-gray-400">
-
-                  Image Preview
-
+                <div className="mt-3 h-56 rounded-xl border-2 border-dashed flex items-center justify-center text-gray-400 overflow-hidden">
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
+                  ) : (
+                    "Image Preview"
+                  )}
                 </div>
-
               </div>
 
-              <Button className="w-full h-12 text-lg">
-
-                Save Product
-
+              <Button type="submit" disabled={loading} className="w-full h-12 text-lg">
+                {loading ? "Saving..." : "Save Product"}
               </Button>
-
             </CardContent>
-
           </Card>
-
-        </div>
-
+        </form>
       </div>
-
     </div>
   );
 }

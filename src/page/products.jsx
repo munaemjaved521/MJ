@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export default function ProductsList() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Category Filter State
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -43,7 +45,8 @@ export default function ProductsList() {
   ];
 
   // DELETE Product
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, e) => {
+    e.stopPropagation();
     if (!confirm("Are You Sure U want To Delete Product?")) return;
 
     try {
@@ -55,11 +58,17 @@ export default function ProductsList() {
         alert("Product is deleted!");
         setProducts(products.filter((item) => item.id !== id));
       } else {
-        alert("there is some error when deleting product!");
+        alert("There is some error when deleting product!");
       }
     } catch (error) {
       console.error("Delete Error:", error);
     }
+  };
+
+  // EDIT Button Handler
+  const handleEditClick = (product, e) => {
+    e.stopPropagation();
+    setEditingProduct(product);
   };
 
   // UPDATE Product
@@ -87,24 +96,31 @@ export default function ProductsList() {
   };
 
   // Filter Products based on Selected Category Dropdown
-  const filteredProducts = selectedCategory === "All"
-    ? products
-    : products.filter((product) => product.category === selectedCategory);
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
 
-  if (loading) return <p className="p-8 text-center font-bold">Products Load Ho Rahe Hain...</p>;
+  if (loading)
+    return (
+      <p className="p-8 text-center font-bold">
+        Products Are Loading Please Wait
+      </p>
+    );
 
   return (
     <div className="min-h-screen bg-slate-100 p-8">
       <div className="max-w-7xl mx-auto">
-        
         {/* Header and Category Dropdown Filter */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-bold mb-1">All Products</h1>
-            <p className="text-gray-500">Filter and manage your store inventory.</p>
+            <p className="text-gray-500">
+              Filter and manage your store inventory.
+            </p>
           </div>
 
-          {/* 🎯 DYNAMIC CATEGORY DROPDOWN */}
+          {/* DYNAMIC CATEGORY DROPDOWN */}
           <div className="flex items-center gap-3 bg-white p-3 rounded-lg border shadow-sm">
             <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">
               Filter by Category:
@@ -123,60 +139,101 @@ export default function ProductsList() {
           </div>
         </div>
 
-        {/* Products Grid */}
+        {/* LINE-WISE / TABLE PRODUCT LIST */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border">
             <p className="text-gray-500 font-medium">There are no products.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {filteredProducts.map((product) => (
-              <Card key={product.id} className="relative overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition">
-                <div>
-                  <img
-                    src={product.image || "https://via.placeholder.com/150"}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <CardHeader>
-                    <CardTitle className="flex justify-between items-center text-lg">
-                      <span>{product.name}</span>
-                      <span className="text-green-600 font-bold">${product.price}</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-500 mb-3 line-clamp-2">{product.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-semibold bg-slate-200 px-2.5 py-1 rounded-full text-slate-700">
-                        {product.category}
-                      </span>
-                      {product.brand && (
-                        <span className="text-xs text-gray-400">
-                          Brand: {product.brand}
-                        </span>
-                      )}
-                    </div>
-                  </CardContent>
-                </div>
+          <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm font-semibold">
+                    {/* 🎯 1. Header mein ID Column Add Hua */}
+                    <th className="p-4">ID</th>
+                    <th className="p-4">Product</th>
+                    <th className="p-4">Category</th>
+                    <th className="p-4">Brand</th>
+                    <th className="p-4">Price</th>
+                    <th className="p-4 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {filteredProducts.map((product) => (
+                    <tr
+                      key={product.id}
+                      onClick={() => navigate(`/product/${product.id}`)}
+                      className="hover:bg-slate-100/80 transition-colors cursor-pointer"
+                    >
+                      {/* 🎯 2. Product ID Display Karne Ke Liye */}
+                      <td className="p-4 whitespace-nowrap text-xs font-mono font-bold text-slate-500">
+                        #{product.id}
+                      </td>
 
-                {/* Edit & Delete Buttons */}
-                <div className="p-4 flex gap-2 border-t bg-slate-50">
-                  <Button
-                    onClick={() => setEditingProduct(product)}
-                    className="w-1/2 bg-blue-600 hover:bg-blue-700"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={() => handleDelete(product.id)}
-                    variant="destructive"
-                    className="w-1/2 bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                      {/* Image & Name & Description */}
+                      <td className="p-4 min-w-[280px]">
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={
+                              product.image || "https://via.placeholder.com/150"
+                            }
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded-md border flex-shrink-0"
+                          />
+                          <div>
+                            <h3 className="font-semibold text-slate-900 line-clamp-1 hover:underline">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">
+                              {product.description || "No description available"}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Category */}
+                      <td className="p-4 whitespace-nowrap">
+                        <span className="text-xs font-medium bg-slate-100 px-2.5 py-1 rounded-full text-slate-700 border">
+                          {product.category}
+                        </span>
+                      </td>
+
+                      {/* Brand */}
+                      <td className="p-4 whitespace-nowrap text-sm text-slate-600">
+                        {product.brand || "-"}
+                      </td>
+
+                      {/* Price */}
+                      <td className="p-4 whitespace-nowrap font-bold text-green-600 text-base">
+                        ${product.price}
+                      </td>
+
+                      {/* Action Buttons */}
+                      <td className="p-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            onClick={(e) => handleEditClick(product, e)}
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={(e) => handleDelete(product.id, e)}
+                            size="sm"
+                            variant="destructive"
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -185,7 +242,7 @@ export default function ProductsList() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <Card className="w-full max-w-lg bg-white max-h-[90vh] overflow-y-auto">
               <CardHeader>
-                <CardTitle>Edit Product</CardTitle>
+                <CardTitle>Edit Product #{editingProduct.id}</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleUpdateSubmit} className="space-y-4">
@@ -194,13 +251,16 @@ export default function ProductsList() {
                     <Input
                       value={editingProduct.name || ""}
                       onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, name: e.target.value })
+                        setEditingProduct({
+                          ...editingProduct,
+                          name: e.target.value,
+                        })
                       }
                       required
                     />
                   </div>
 
-                  {/* 📸 IMAGE URL TEXT INPUT */}
+                  {/* IMAGE URL TEXT INPUT */}
                   <div>
                     <label className="text-sm font-medium">Image URL</label>
                     <Input
@@ -208,7 +268,10 @@ export default function ProductsList() {
                       placeholder="https://example.com/image.jpg"
                       value={editingProduct.image || ""}
                       onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, image: e.target.value })
+                        setEditingProduct({
+                          ...editingProduct,
+                          image: e.target.value,
+                        })
                       }
                     />
                     {editingProduct.image && (
@@ -219,7 +282,8 @@ export default function ProductsList() {
                           className="h-full object-contain"
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://via.placeholder.com/150?text=Invalid+URL";
+                            e.target.src =
+                              "https://via.placeholder.com/150?text=Invalid+URL";
                           }}
                         />
                       </div>
@@ -232,7 +296,10 @@ export default function ProductsList() {
                       type="text"
                       value={editingProduct.category || ""}
                       onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, category: e.target.value })
+                        setEditingProduct({
+                          ...editingProduct,
+                          category: e.target.value,
+                        })
                       }
                       className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm mt-1"
                     />
@@ -244,7 +311,10 @@ export default function ProductsList() {
                       type="number"
                       value={editingProduct.price || ""}
                       onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, price: e.target.value })
+                        setEditingProduct({
+                          ...editingProduct,
+                          price: e.target.value,
+                        })
                       }
                       required
                     />
@@ -255,7 +325,10 @@ export default function ProductsList() {
                     <Input
                       value={editingProduct.description || ""}
                       onChange={(e) =>
-                        setEditingProduct({ ...editingProduct, description: e.target.value })
+                        setEditingProduct({
+                          ...editingProduct,
+                          description: e.target.value,
+                        })
                       }
                     />
                   </div>

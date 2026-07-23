@@ -1,12 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 1. useNavigate import kiya
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
+// React Toastify Imports
+import { ToastContainer, toast, Zoom } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Addproducts() {
+  const navigate = useNavigate(); // 2. Hook initialize kiya
+
   const sizes = [38, 39, 40, 41, 42, 43];
 
   const colors = [
@@ -16,6 +22,19 @@ export default function Addproducts() {
     { name: "Red", value: "#dc2626" },
     { name: "Green", value: "#16a34a" },
   ];
+
+  // Config object for Toastify
+  const toastConfig = {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: false,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Zoom,
+  };
 
   // 1. Form States
   const [formData, setFormData] = useState({
@@ -27,6 +46,7 @@ export default function Addproducts() {
     discountPrice: "",
     stock: "",
     sku: "",
+    image: "", // Image URL agar input text ho
   });
 
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -63,53 +83,31 @@ export default function Addproducts() {
     );
   };
 
-  // Handle Image Change & Preview
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setMainImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
   // 2. Submit Handler / API Call
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Agar image upload karni ho to FormData use karein
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("description", formData.description);
-      data.append("category", formData.category);
-      data.append("brand", formData.brand);
-      data.append("price", formData.price);
-      data.append("discountPrice", formData.discountPrice);
-      data.append("stock", formData.stock);
-      data.append("sku", formData.sku);
-      data.append("sizes", JSON.stringify(selectedSizes));
-      data.append("colors", JSON.stringify(selectedColors));
-      data.append("status", JSON.stringify(status));
-      if (mainImage) {
-        data.append("mainImage", mainImage);
-      }
+      // MockAPI ke liye payload object
+      const payload = {
+        ...formData,
+        sizes: selectedSizes,
+        colors: selectedColors,
+        status: status,
+      };
 
-      const handlesubmit = async (e) =>
-      e.prevertdefault();
-      await axios.post("https://6a5f186c98d9f02aed7a128d.mockapi.io/products",formData)
-      .then(()=>{alert("data added")})
-      // // 3. API Fetch Request (Apni Backend API ka URL yahan lagayein)
-      // const response = await fetch("https://6a5f186c98d9f02aed7a128d.mockapi.io/:products", {
-      //   method: "POST",
-      //   body: data,
-      // });
+      // Axios Post Request
+      const response = await axios.post(
+        "https://6a5f186c98d9f02aed7a128d.mockapi.io/products",
+        payload
+      );
 
-      const result = await response.json();
+      if (response.status === 201 || response.status === 200) {
+        // SUCCESS TOAST
+        toast.success("Product Successfully Added!", toastConfig);
 
-      if (response.ok) {
-        alert("Product Successfully Added!");
-        // Form reset karein
+        // Form Reset
         setFormData({
           name: "",
           description: "",
@@ -119,16 +117,29 @@ export default function Addproducts() {
           discountPrice: "",
           stock: "",
           sku: "",
+          image: "",
         });
         setSelectedSizes([]);
         setSelectedColors([]);
+        setStatus({
+          isFeatured: false,
+          isBestSeller: false,
+          isNewArrival: false,
+        });
         setPreviewUrl(null);
-      } else {
-        alert("Failed to add product: " + (result.message || "Unknown error"));
+
+        // 3. Product Add hone ke baad /products route par navigate karna
+        setTimeout(() => {
+          navigate("/products");
+        }, 1500);
       }
     } catch (error) {
       console.error("API Error:", error);
-      alert("Something went wrong while connecting to the API!");
+      // ERROR/DANGER TOAST
+      toast.error(
+        "Failed to add product: " + (error.response?.data || error.message),
+        toastConfig
+      );
     } finally {
       setLoading(false);
     }
@@ -136,6 +147,9 @@ export default function Addproducts() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-8">
+      {/* Toastify Container Component */}
+      <ToastContainer />
+
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-2">Add Product</h1>
         <p className="text-gray-500 mb-8">
@@ -283,7 +297,9 @@ export default function Addproducts() {
                         key={color.name}
                         onClick={() => handleColorToggle(color.name)}
                         className={`w-10 h-10 rounded-full border-2 transition-all ${
-                          isSelected ? "ring-2 ring-black scale-110" : "border-gray-300"
+                          isSelected
+                            ? "ring-2 ring-black scale-110"
+                            : "border-gray-300"
                         }`}
                         style={{ backgroundColor: color.value }}
                         title={color.name}
@@ -303,8 +319,17 @@ export default function Addproducts() {
 
             <CardContent className="space-y-6">
               <div>
-                <Label>Main Image</Label>
-                <Input type="text" value={formData.image} name="image" onChange={handleChange} accept="image/*" />
+                <Label>Main Image URL</Label>
+                <Input
+                  type="text"
+                  value={formData.image}
+                  name="image"
+                  onChange={(e) => {
+                    handleChange(e);
+                    setPreviewUrl(e.target.value);
+                  }}
+                  placeholder="Paste Image URL here"
+                />
               </div>
 
               <div>
@@ -314,7 +339,9 @@ export default function Addproducts() {
                     <input
                       type="checkbox"
                       checked={status.isFeatured}
-                      onChange={(e) => setStatus({ ...status, isFeatured: e.target.checked })}
+                      onChange={(e) =>
+                        setStatus({ ...status, isFeatured: e.target.checked })
+                      }
                     />
                     Featured Product
                   </label>
@@ -323,7 +350,12 @@ export default function Addproducts() {
                     <input
                       type="checkbox"
                       checked={status.isBestSeller}
-                      onChange={(e) => setStatus({ ...status, isBestSeller: e.target.checked })}
+                      onChange={(e) =>
+                        setStatus({
+                          ...status,
+                          isBestSeller: e.target.checked,
+                        })
+                      }
                     />
                     Best Seller
                   </label>
@@ -332,7 +364,12 @@ export default function Addproducts() {
                     <input
                       type="checkbox"
                       checked={status.isNewArrival}
-                      onChange={(e) => setStatus({ ...status, isNewArrival: e.target.checked })}
+                      onChange={(e) =>
+                        setStatus({
+                          ...status,
+                          isNewArrival: e.target.checked,
+                        })
+                      }
                     />
                     New Arrival
                   </label>
@@ -344,14 +381,22 @@ export default function Addproducts() {
                 <Label>Preview</Label>
                 <div className="mt-3 h-56 rounded-xl border-2 border-dashed flex items-center justify-center text-gray-400 overflow-hidden">
                   {previewUrl ? (
-                    <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     "Image Preview"
                   )}
                 </div>
               </div>
 
-              <Button type="submit" disabled={loading} className="w-full h-12 text-lg">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 text-lg"
+              >
                 {loading ? "Saving..." : "Save Product"}
               </Button>
             </CardContent>

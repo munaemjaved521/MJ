@@ -38,13 +38,6 @@ const data = {
       ),
     },
     {
-      title: "Products Detail",
-      url: "/product-detail",
-      icon: (
-        <ListIcon />
-      ),
-    },
-    {
       title: "Products",
       url: "/products",
       icon: (

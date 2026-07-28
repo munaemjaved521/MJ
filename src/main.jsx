@@ -5,10 +5,12 @@ import { BrowserRouter } from "react-router";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import App from './App.jsx'
 import { ToastContainer, Zoom } from 'react-toastify';
+import { ThemeProvider } from './context/Themecontext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
+    <ThemeProvider>
      <TooltipProvider>
 
 <ToastContainer
@@ -27,7 +29,7 @@ transition={Zoom}
 
     <App />
     </TooltipProvider>
+     </ThemeProvider>
     </BrowserRouter>
-
   </StrictMode>
 )

@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // 🎯 1. Router Hooks
+import { useParams, useNavigate } from "react-router-dom";
 import { Star, Minus, Plus, Heart, ArrowLeft } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function ProductDetail() {
-  const { id } = useParams(); // 🎯 URL se Dynamic ID mili (/product/:id)
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Static options (agar API mein nahi hain)
+  // Static options
   const colors = [
     {
       name: "Black",
@@ -47,7 +47,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [wishlist, setWishlist] = useState(false);
 
-  // 🎯 2. API se Single Product Fetch Karna
+  // API se Single Product Fetch Karna
   useEffect(() => {
     const fetchSingleProduct = async () => {
       try {
@@ -70,7 +70,7 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center font-bold text-lg">
+      <div className="min-h-screen flex items-center justify-center font-bold text-lg bg-background text-foreground">
         Loading Product Details...
       </div>
     );
@@ -78,7 +78,7 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-foreground">
         <p className="text-xl font-semibold text-red-500">Product Not Found!</p>
         <Button onClick={() => navigate("/")}>Go Back To Products</Button>
       </div>
@@ -86,23 +86,23 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-6 md:p-10">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center p-6 md:p-10">
       
-      {/* 🎯 Back Button */}
+      {/* Back Button */}
       <div className="max-w-6xl w-full mb-4">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 hover:bg-slate-200"
+          className="flex items-center gap-2 hover:bg-muted text-foreground"
         >
           <ArrowLeft size={18} /> Back to Products
         </Button>
       </div>
 
-      <Card className="max-w-6xl w-full shadow-xl rounded-2xl">
+      <Card className="max-w-6xl w-full shadow-xl rounded-2xl bg-card text-card-foreground border-border">
         <CardContent className="grid md:grid-cols-2 gap-10 p-8">
 
-          {/* Dynamic Image (Sath Color Selection Fallback) */}
+          {/* Dynamic Image */}
           <div className="flex justify-center items-center">
             <img
               src={
@@ -111,7 +111,7 @@ export default function ProductDetail() {
                 "https://via.placeholder.com/400"
               }
               alt={product.name}
-              className="rounded-xl object-cover w-full max-w-md h-96 border"
+              className="rounded-xl object-cover w-full max-w-md h-96 border border-border bg-background"
             />
           </div>
 
@@ -119,18 +119,18 @@ export default function ProductDetail() {
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold bg-slate-200 px-2 py-1 rounded text-slate-700">
+                <span className="text-xs font-semibold bg-muted px-2 py-1 rounded text-muted-foreground border border-border">
                   ID: #{product.id}
                 </span>
                 {product.category && (
-                  <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  <span className="text-xs font-semibold bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20">
                     {product.category}
                   </span>
                 )}
               </div>
 
-              {/* 💥 Dynamic Name */}
-              <h1 className="text-3xl font-bold mt-2">{product.name}</h1>
+              {/* Dynamic Name */}
+              <h1 className="text-3xl font-bold mt-2 text-foreground">{product.name}</h1>
 
               <div className="flex items-center gap-1 mt-2 text-yellow-500">
                 <Star fill="currentColor" size={18} />
@@ -138,24 +138,24 @@ export default function ProductDetail() {
                 <Star fill="currentColor" size={18} />
                 <Star fill="currentColor" size={18} />
                 <Star fill="currentColor" size={18} />
-                <span className="text-gray-600 ml-2">(4.9)</span>
+                <span className="text-muted-foreground ml-2">(4.9)</span>
               </div>
 
-              {/* 💥 Dynamic Price */}
+              {/* Dynamic Price */}
               <p className="text-3xl font-bold mt-4 text-primary">
                 ${product.price}
               </p>
             </div>
 
-            {/* 💥 Dynamic Description */}
-            <p className="text-gray-600">
+            {/* Dynamic Description */}
+            <p className="text-muted-foreground">
               {product.description ||
                 "Experience premium quality and high-grade materials designed for maximum comfort and style."}
             </p>
 
             {/* Colors */}
             <div>
-              <h3 className="font-semibold mb-3">Select Color</h3>
+              <h3 className="font-semibold mb-3 text-foreground">Select Color</h3>
               <div className="flex gap-3">
                 {colors.map((color) => (
                   <button
@@ -163,8 +163,8 @@ export default function ProductDetail() {
                     onClick={() => setSelectedColor(color)}
                     className={`w-10 h-10 rounded-full border-4 transition-all ${
                       selectedColor.name === color.name
-                        ? "border-black scale-110"
-                        : "border-gray-300"
+                        ? "border-primary scale-110"
+                        : "border-border"
                     }`}
                     style={{ backgroundColor: color.value }}
                   />
@@ -174,7 +174,7 @@ export default function ProductDetail() {
 
             {/* Sizes */}
             <div>
-              <h3 className="font-semibold mb-3">Select Size</h3>
+              <h3 className="font-semibold mb-3 text-foreground">Select Size</h3>
               <div className="flex flex-wrap gap-3">
                 {sizes.map((size) => (
                   <Button
@@ -190,7 +190,7 @@ export default function ProductDetail() {
 
             {/* Quantity */}
             <div>
-              <h3 className="font-semibold mb-3">Quantity</h3>
+              <h3 className="font-semibold mb-3 text-foreground">Quantity</h3>
               <div className="flex items-center gap-4">
                 <Button
                   size="icon"
@@ -202,10 +202,11 @@ export default function ProductDetail() {
                   <Minus />
                 </Button>
 
-                <span className="text-2xl font-bold">{quantity}</span>
+                <span className="text-2xl font-bold text-foreground">{quantity}</span>
 
                 <Button
                   size="icon"
+                  variant="outline"
                   onClick={() => setQuantity((prev) => prev + 1)}
                 >
                   <Plus />
@@ -228,7 +229,7 @@ export default function ProductDetail() {
                   className={`${
                     wishlist
                       ? "fill-red-500 text-red-500"
-                      : "text-gray-500"
+                      : "text-muted-foreground"
                   }`}
                 />
               </Button>

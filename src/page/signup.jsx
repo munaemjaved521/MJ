@@ -26,22 +26,29 @@ export default function Signup() {
     setIsLoading(true)
 
     try {
-      await axios.post("https://6a5f17f898d9f02aed7a11fc.mockapi.io/users", {
+      // API request to create new user
+      const response = await axios.post("https://6a5f17f898d9f02aed7a11fc.mockapi.io/users", {
         name,
         email,
         password,
         joinedDate: new Date().toISOString().split("T")[0],
       })
 
+      const newUser = response.data
+
+      // Automatically login the user after successful signup
+      localStorage.setItem("token", newUser.id)
+      localStorage.setItem("userName", newUser.name)
+
       toast.success("Account created successfully!")
-      navigate("/dashboard/login")
+      navigate("/dashboard") // Seedha dashboard par bhej diya
     } catch (error) {
       toast.error("Something went wrong during signup!")
     } finally {
       setIsLoading(false)
     }
   }
-
+  
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
       <div className="flex flex-col gap-6 w-full max-w-sm">

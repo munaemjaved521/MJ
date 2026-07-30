@@ -25,7 +25,6 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      // API se saare users fetch karke match kar rahe hain
       const response = await axios.get("https://6a5f17f898d9f02aed7a11fc.mockapi.io/users")
       const users = response.data
 
@@ -34,6 +33,10 @@ export default function Login() {
       )
 
       if (validUser) {
+        
+        localStorage.setItem("token", validUser.id)
+        localStorage.setItem("userName", validUser.name)
+        
         toast.success("Login successful!")
         navigate("/dashboard")
       } else {

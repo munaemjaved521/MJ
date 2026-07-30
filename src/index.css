@@ -120,11 +120,19 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+  
+  .dark body, .dark p, .dark span, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6, .dark label {
+    color: var(--foreground);
+  }
 }

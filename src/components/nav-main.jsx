@@ -3,7 +3,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { CirclePlusIcon, MailIcon } from "lucide-react"
@@ -17,15 +16,22 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground">
-              <CirclePlusIcon />
-              <span>Add Employee</span>
-            </SidebarMenuButton>
+            <Button
+              asChild
+              className="w-full justify-start gap-2 font-medium transition-colors"
+              style={{
+                backgroundColor: document.documentElement.classList.contains("dark") ? "#ffffff" : "#18181b",
+                color: document.documentElement.classList.contains("dark") ? "#000000" : "#ffffff",
+              }}
+            >
+              <Link to="/add-employee">
+                <CirclePlusIcon className="w-4 h-4" />
+                <span>Add Employee</span>
+              </Link>
+            </Button>
             <Button
               size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
+              className="size-8 group-data-[collapsible=icon]:opacity-0 border-border bg-background text-foreground hover:bg-muted"
               variant="outline">
               <MailIcon />
               <span className="sr-only">Inbox</span>
@@ -35,12 +41,16 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon}
+              <Button
+                variant="ghost"
+                asChild
+                className="w-full justify-start gap-3 px-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              >
                 <Link to={item.url}>
-                <span>{item.title}</span>
+                  {item.icon}
+                  <span>{item.title}</span>
                 </Link>
-              </SidebarMenuButton>
+              </Button>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

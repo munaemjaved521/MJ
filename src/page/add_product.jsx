@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 1. useNavigate import kiya
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { ToastContainer, toast, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Addproducts() {
-  const navigate = useNavigate(); // 2. Hook initialize kiya
+  const navigate = useNavigate();
 
   const sizes = [38, 39, 40, 41, 42, 43];
 
@@ -36,7 +36,7 @@ export default function Addproducts() {
     transition: Zoom,
   };
 
-  // 1. Form States
+  // Form States
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -46,7 +46,7 @@ export default function Addproducts() {
     discountPrice: "",
     stock: "",
     sku: "",
-    image: "", // Image URL agar input text ho
+    image: "",
   });
 
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -57,7 +57,6 @@ export default function Addproducts() {
     isNewArrival: false,
   });
 
-  const [mainImage, setMainImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -83,13 +82,12 @@ export default function Addproducts() {
     );
   };
 
-  // 2. Submit Handler / API Call
+  // Submit Handler / API Call
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // MockAPI ke liye payload object
       const payload = {
         ...formData,
         sizes: selectedSizes,
@@ -97,17 +95,14 @@ export default function Addproducts() {
         status: status,
       };
 
-      // Axios Post Request
       const response = await axios.post(
         "https://6a5f186c98d9f02aed7a128d.mockapi.io/products",
         payload
       );
 
       if (response.status === 201 || response.status === 200) {
-        // SUCCESS TOAST
         toast.success("Product Successfully Added!", toastConfig);
 
-        // Form Reset
         setFormData({
           name: "",
           description: "",
@@ -128,14 +123,12 @@ export default function Addproducts() {
         });
         setPreviewUrl(null);
 
-        // 3. Product Add hone ke baad /products route par navigate karna
         setTimeout(() => {
           navigate("/products");
         }, 1500);
       }
     } catch (error) {
       console.error("API Error:", error);
-      // ERROR/DANGER TOAST
       toast.error(
         "Failed to add product: " + (error.response?.data || error.message),
         toastConfig
@@ -146,19 +139,19 @@ export default function Addproducts() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 p-8">
+    <div className="min-h-screen bg-background text-foreground p-8">
       {/* Toastify Container Component */}
       <ToastContainer />
 
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-2">Add Product</h1>
-        <p className="text-gray-500 mb-8">
+        <p className="text-muted-foreground mb-8">
           Create a new product for your store.
         </p>
 
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-6">
           {/* Left Side */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 bg-card text-card-foreground border-border">
             <CardHeader>
               <CardTitle>Product Information</CardTitle>
             </CardHeader>
@@ -193,7 +186,7 @@ export default function Addproducts() {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full h-10 rounded-md border px-3"
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-foreground"
                   >
                     <option value="Shoes">Shoes</option>
                     <option value="T-Shirts">T-Shirts</option>
@@ -274,8 +267,8 @@ export default function Addproducts() {
                         onClick={() => handleSizeToggle(size)}
                         className={`h-10 w-14 rounded-lg border transition ${
                           isSelected
-                            ? "bg-black text-white border-black"
-                            : "bg-white hover:bg-slate-100"
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background text-foreground border-border hover:bg-muted"
                         }`}
                       >
                         {size}
@@ -298,8 +291,8 @@ export default function Addproducts() {
                         onClick={() => handleColorToggle(color.name)}
                         className={`w-10 h-10 rounded-full border-2 transition-all ${
                           isSelected
-                            ? "ring-2 ring-black scale-110"
-                            : "border-gray-300"
+                            ? "ring-2 ring-primary scale-110"
+                            : "border-border"
                         }`}
                         style={{ backgroundColor: color.value }}
                         title={color.name}
@@ -312,7 +305,7 @@ export default function Addproducts() {
           </Card>
 
           {/* Right Side */}
-          <Card>
+          <Card className="bg-card text-card-foreground border-border">
             <CardHeader>
               <CardTitle>Product Images & Status</CardTitle>
             </CardHeader>
@@ -379,7 +372,7 @@ export default function Addproducts() {
               {/* Image Preview Area */}
               <div>
                 <Label>Preview</Label>
-                <div className="mt-3 h-56 rounded-xl border-2 border-dashed flex items-center justify-center text-gray-400 overflow-hidden">
+                <div className="mt-3 h-56 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground overflow-hidden bg-background">
                   {previewUrl ? (
                     <img
                       src={previewUrl}

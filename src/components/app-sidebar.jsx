@@ -26,152 +26,56 @@ const data = {
     {
       title: "Dashboard",
       url: "/",
-      icon: (
-        <LayoutDashboardIcon />
-      ),
+      icon: <LayoutDashboardIcon />,
     },
     {
       title: "Add Products",
       url: "/add-Product",
-      icon: (
-        <ListIcon />
-      ),
+      icon: <ListIcon />,
     },
     {
       title: "Products",
       url: "/products",
-      icon: (
-        <ChartBarIcon />
-      ),
+      icon: <ChartBarIcon />,
     },
     {
       title: "Add Categories",
       url: "#",
-      icon: (
-        <FolderIcon />
-      ),
+      icon: <FolderIcon />,
     },
     {
       title: "Categories",
       url: "#",
-      icon: (
-        <UsersIcon />
-      ),
-    },
-    
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: (
-        <CameraIcon />
-      ),
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: (
-        <FileTextIcon />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: (
-        <FileTextIcon />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      icon: <UsersIcon />,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
       url: "#",
-      icon: (
-        <Settings2Icon />
-      ),
+      icon: <Settings2Icon />,
     },
     {
       title: "Get Help",
       url: "#",
-      icon: (
-        <CircleHelpIcon />
-      ),
+      icon: <CircleHelpIcon />,
     },
     {
       title: "Search",
       url: "#",
-      icon: (
-        <SearchIcon />
-      ),
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: (
-        <DatabaseIcon />
-      ),
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: (
-        <FileChartColumnIcon />
-      ),
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: (
-        <FileIcon />
-      ),
+      icon: <SearchIcon />,
     },
   ],
 }
 
-export function AppSidebar({
-  ...props
-}) {
+export function AppSidebar({ ...props }) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+    <Sidebar collapsible="offcanvas" className="border-r border-border bg-sidebar text-sidebar-foreground" {...props}>
+      <SidebarHeader className="border-b border-border/50 pb-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
-              <Link to={'/'}>
+              <Link to={'/'} className="flex items-center gap-3 text-sidebar-foreground hover:text-sidebar-accent-foreground">
                 <CommandIcon className="size-5!" />
                 <span className="text-base font-semibold">Dashboard</span>
               </Link>
@@ -179,12 +83,13 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      
+      <SidebarContent className="px-2 py-4">
         <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
+
+      <SidebarFooter className="border-t border-border/50 pt-2">
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>

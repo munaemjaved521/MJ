@@ -1,71 +1,65 @@
 import { useEffect, useState } from "react";
-import { Minus, Plus, RotateCcw } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Minus, RotateCcw } from "lucide-react";
 
-export default function Contact() {
+// Yahan path ko 'redux' folder ke mutabiq theek kar diya hai:
+import { decrement, increment, reset } from "../redux/slices/counterSlice";
+
+import { useDispatch, useSelector } from "react-redux";
+
+export default function Counter() {
   const [count, setCount] = useState(0);
+  const [product, setProduct] = useState([]);
 
-  useEffect(()=>{
-    getdata()
-  },[count])
+  useEffect(() => {
+    getData();
+  }, [count]);
 
-  function getdata(){
-  fetch('https://fakestoreapi.com/products')
-  .then(response => response.json())
-  .then(data => console.log(data));}
-  const handleIncrement = () => {
-  setCount((prev) => prev + 1);
-  };
+  function getData() {
+    fetch('https://fakestoreapi.com/products')
+      .then(response => response.json())
+      .then(data => {
+        setProduct(data);
+      });
+  }
 
-
-  const handleDecrement = () => {
-    setCount((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleReset = () => {
-    setCount(0);
-  };
+  const counter = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <Card className="w-80 rounded-2xl shadow-xl">
-        <CardContent className="flex flex-col items-center gap-6 py-8">
-          <h1 className="text-2xl font-bold">Counter</h1>
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
+        <h1 className="mb-6 text-center text-3xl font-bold">Counter</h1>
 
-          <div className="text-6xl font-bold text-primary">
-            {count}
-          </div>
+        <div className="mb-8 text-center">
+          <span className="text-6xl font-bold">{counter}</span>
+        </div>
 
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleDecrement}
-              disabled={count === 0}
-            >
-              <Minus className="h-5 w-5" />
-            </Button>
+        <div className="flex justify-center gap-4">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => dispatch(decrement())}
+          >
+            <Minus className="h-5 w-5" />
+          </Button>
 
-            <Button
-              size="icon"
-              onClick={handleIncrement}
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
-          </div>
+          <Button
+            size="icon"
+            onClick={() => dispatch(increment())}
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
 
           <Button
             variant="destructive"
-            onClick={handleReset}
-            className="w-full"
+            size="icon"
+            onClick={() => dispatch(reset())}
           >
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
+            <RotateCcw className="h-5 w-5" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
